@@ -181,7 +181,8 @@ void neurons_kernel(float *V_extra,
 		}
 
 		// generate spikes for EES
-		if (tid < 50 && EES_activated) has_spike[tid] = true;
+		if (tid < 50 && sim_iter % 250 == 0)
+		    has_spike[tid] = true;
 		// skin stimulations
 		if (!C0_activated) {
 			if (tid == 300 && CV_activated == 1 && (sim_iter % 4 == 0)) has_spike[tid] = true;
@@ -365,44 +366,6 @@ int get_skin_stim_time(int cms) {
 	return 125;
 }
 
-void bimodal_distr_for_moto_neurons(float *nrn_diameter) {
-	int diameter_active = 27;
-	int diameter_standby = 57;
-	// MN_E [1557 ... 1766] 210 MN_F [1767 ... 1946] 180
-	int MN_E_start = 1557;
-	int MN_E_end = 1766;
-	int MN_F_start = 1767;
-	int MN_F_end = 1946;
-
-	int nrn_number_extensor = MN_E_end - MN_E_start + 1;
-	int nrn_number_flexor = MN_F_end - MN_F_start + 1;
-
-	int standby_percent = 70;
-
-	int standby_size_extensor = (int) (nrn_number_extensor * standby_percent / 100);
-	int standby_size_flexor = (int) (nrn_number_flexor * standby_percent / 100);
-	int active_size_extensor = nrn_number_extensor - standby_size_extensor;
-	int active_size_flexor = nrn_number_flexor - standby_size_flexor;
-
-	random_device r1;
-	default_random_engine generator1(r1());
-	normal_distribution<float> d_active(diameter_active, 3);
-	normal_distribution<float> d_standby(diameter_standby, 6);
-
-	for (int i = MN_E_start; i < MN_E_start + active_size_extensor; i++) {
-		nrn_diameter[i] = d_active(generator1);
-	}
-	for (int i = MN_E_start + active_size_extensor; i <= MN_E_end; i++) {
-		nrn_diameter[i] = d_standby(generator1);
-	}
-
-	for (int i = MN_F_start; i < MN_F_start + active_size_flexor; i++) {
-		nrn_diameter[i] = d_active(generator1);
-	}
-	for (int i = MN_F_start + active_size_flexor; i <= MN_F_end; i++) {
-		nrn_diameter[i] = d_standby(generator1);
-	}
-}
 
 void save(int test_index, GroupMetadata &metadata, const string &folder) {
 	ofstream file;
@@ -1006,47 +969,6 @@ void simulate(int cms, int ees, int inh, int ped, int ht5, int save_all, int ite
 
 	// the main simulation loop
 	for (unsigned int sim_iter = 0; sim_iter < SIM_TIME_IN_STEPS; sim_iter++) {
-		CV_activated = 0;
-		decrease_lvl_Ia_spikes = 0;
-		EES_activated = (sim_iter % ees_spike_each_step == 0);
-
-		// if flexor C0 activated, find the end of it and change to C1
-		if (C0_activated) {
-			if (local_iter != 0 && local_iter % steps_activation_C0 == 0) {
-				C0_activated = false;
-				local_iter = 0;
-				shift_time_by_step += steps_activation_C0;
-			}
-			if (local_iter != 0 && (local_iter + 400) % steps_activation_C0 == 0)
-				C0_early_activated = false;
-			// if extensor C1 activated, find the end of it and change to C0
-		} else {
-			if (local_iter != 0 && local_iter % steps_activation_C1 == 0) {
-				C0_activated = true;
-				local_iter = 0;
-				shift_time_by_step += steps_activation_C1;
-			}
-			if (local_iter != 0 && (local_iter + 400) % steps_activation_C1 == 0)
-				C0_early_activated = true;
-		}
-
-		shifted_iter_time = sim_iter - shift_time_by_step;
-
-		if ((beg_C_spiking[0] <= shifted_iter_time) && (shifted_iter_time < end_C_spiking[0])) CV_activated = 1;
-		if ((beg_C_spiking[1] <= shifted_iter_time) && (shifted_iter_time < end_C_spiking[1])) CV_activated = 2;
-		if ((beg_C_spiking[2] <= shifted_iter_time) && (shifted_iter_time < end_C_spiking[2])) CV_activated = 3;
-		if ((beg_C_spiking[3] <= shifted_iter_time) && (shifted_iter_time < end_C_spiking[3])) CV_activated = 4;
-		if ((beg_C_spiking[4] <= shifted_iter_time) && (shifted_iter_time < end_C_spiking[4])) CV_activated = 5;
-
-		if (CV_activated == 1) decrease_lvl_Ia_spikes = 2;
-		if (CV_activated == 2) decrease_lvl_Ia_spikes = 1;
-		if (CV_activated == 3) decrease_lvl_Ia_spikes = 0;
-		if (CV_activated == 4) decrease_lvl_Ia_spikes = 1;
-		if (CV_activated == 5) decrease_lvl_Ia_spikes = 2;
-
-		// update local iter (warning: can be resetted at C0/C1 activation)
-		local_iter++;
-
 		// invoke GPU kernel for neurons
 		neurons_kernel<<<32, 128>>>(gpu_nrn_v_extra,
 		                            gpu_nrn_v_m_in,
@@ -1085,23 +1007,11 @@ void simulate(int cms, int ees, int inh, int ped, int ht5, int save_all, int ite
 		memcpyDtH<float>(nrn_v_m_mid, gpu_nrn_v_m_mid, neurons_number);
 		memcpyDtH<float>(nrn_g_exc, gpu_nrn_g_exc, neurons_number);
 		memcpyDtH<float>(nrn_g_inh, gpu_nrn_g_inh, neurons_number);
-		memcpyDtH<float>(nrn_v_extra, gpu_nrn_v_extra, neurons_number);
 		memcpyDtH<bool>(nrn_has_spike, gpu_nrn_has_spike, neurons_number);
 
 		// fill records arrays
 		for (GroupMetadata &metadata : all_groups) {
-			if (save_all == 0) {
-				if (metadata.group.group_name == "MN_E")
 					copy_data_to(metadata, nrn_v_m_mid, nrn_g_exc, nrn_g_inh, nrn_has_spike, sim_iter);
-				if (metadata.group.group_name == "MN_F")
-					copy_data_to(metadata, nrn_v_m_mid, nrn_g_exc, nrn_g_inh, nrn_has_spike, sim_iter);
-
-			} else {
-				if (metadata.group.group_name == "MN_E")
-					copy_data_to(metadata, nrn_v_m_mid, nrn_v_extra, nrn_v_extra, nrn_has_spike, sim_iter);
-				else
-					copy_data_to(metadata, nrn_v_m_mid, nrn_g_exc, nrn_g_inh, nrn_has_spike, sim_iter);
-			}
 		}
 
 		// invoke GPU kernel for synapses
