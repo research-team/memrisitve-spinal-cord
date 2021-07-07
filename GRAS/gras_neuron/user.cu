@@ -294,7 +294,5 @@ void init_network()
 
 
 int main(int argc, char **argv) {
-
-custom(1, init_network, 2);
-
+    custom(init_network, 2);
 }

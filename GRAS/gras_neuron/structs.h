@@ -5,6 +5,9 @@
 #include <vector>
 #include <iostream>
 
+// customize
+enum string_code {air, toe, plt, quadru, normal, qpz, str, s6, s13, s21};
+
 // global name of the models
 const char GENERATOR = 'g';
 const char INTER = 'i';

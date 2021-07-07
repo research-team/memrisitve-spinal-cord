@@ -141,7 +141,7 @@ def run():
 		path = sys.argv[1]
 		nuclei = sys.argv[2]
 	else:
-		path = "/home/grigoriy/work/Oscillator_motif/dat/"
+		path = "dat/"
 
 	plot(skin_stim_time, *read_data(path), step=step, save_to=f"{path}/results/", plot_only=nuclei)
 

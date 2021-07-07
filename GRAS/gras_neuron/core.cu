@@ -1435,7 +1435,8 @@ void connectinsidenucleus(Group &nucleus) {
 	connect_fixed_indegree(nucleus, nucleus, 0.5, 0.25, 50, 3);
 }
 
-void file_writing(int test_index, GroupMetadata &metadata, const string &folder) {
+void file_writing(int test_index
+                  , GroupMetadata &metadata, const string &folder) {
 	/**
 	 *
 	 */
@@ -1643,7 +1644,7 @@ void synapse_kernel(Neurons *N, Synapses* synapses) {
 		}
 	}
 }
-void simulate(int test_index, void network()) {
+void simulate(void (*network)()) {
     /**
      *
      */
@@ -1802,11 +1803,11 @@ void simulate(int test_index, void network()) {
     printf("Elapsed GPU time: %d ms\n", (int) time);
     double Tbw = 12000 * pow(10, 6) * (128 / 8) * 2 / pow(10, 9);
     printf("Theoretical Bandwidth GPU (2 Ghz, 128 bit): %.2f GB/s\n", Tbw);
-
     // save the data into the current folder
-    save_result(test_index);
+    save_result(1);
+
 }
-void custom(int test_ind, void time_network(), int step_number = 1, int TEST = 0, int E2F_coef = 1, int V0v2F_coef = 1, int QUADRU_Ia = 1,
+void custom(void (*t_network)(), int steps = 1, int test_ind=1, int TEST = 0, int E2F_coef = 1, int V0v2F_coef = 1, int QUADRU_Ia = 1,
             string_code mode = quadru, string_code pharma = normal, string_code speed = s13){
     switch(speed) {
         case s6:
@@ -1879,7 +1880,7 @@ void custom(int test_ind, void time_network(), int step_number = 1, int TEST = 0
     }
 
     one_step_time = slices_extensor * skin_time + 25 * slices_flexor;
-    sim_time = 25 + one_step_time * step_number;
+    sim_time = 25 + one_step_time * steps;
     SIM_TIME_IN_STEPS = (unsigned int)(sim_time / dt);  // [steps] converted time into steps
 
     // init the device
@@ -1889,7 +1890,7 @@ void custom(int test_ind, void time_network(), int step_number = 1, int TEST = 0
     printf("device %d: %s \n", dev, deviceProp.name);
     HANDLE_ERROR(cudaSetDevice(dev));
     // the main body of simulation
-    simulate(test_ind, time_network);
+    simulate(t_network);
     // reset device
     HANDLE_ERROR(cudaDeviceReset());
 }
