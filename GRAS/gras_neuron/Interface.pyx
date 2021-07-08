@@ -1,24 +1,26 @@
 # distutils: language = c++
-# distutils: sources = core.cpp
 
-import cytepes
-from cyt_head cimport *
+from Interface cimport *
 
+cdef class PyGroup():
+    cdef Group c_group
+    def __cinit__(self):
+        self.c_group = Group()
 
-cpdef call_connect_fixed_indegree():
+def call_connect_fixed_indegree():
     cdef Group pre_group, post_group
     cdef double delay, weight
     connect_fixed_indegree(pre_group, post_group, delay, weight, 50, 0)
 
-cpdef call_simulate():
+def call_simulate():
     cdef void (*func)()
     simulate(func)
 
-cpdef call_custom():
+def call_custom():
     cdef void (*func)()
     custom(func, 1, 1, 0, 1, 1, 1, quadru, normal, s13)
 
 
-cpdef call_form_group():
+def call_form_group():
     cdef const string name
     form_group(name, 50, 'i', 1)

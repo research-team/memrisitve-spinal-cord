@@ -1,8 +1,9 @@
-from libcpp.string cimport string
+from libcpp.string cimport string 
 
-cdef extern from "structs.h":
+cdef extern from "Interface.h":
+
     cdef enum string_code:
-        air
+        air = 0
         toe
         plt
         quadru
@@ -14,12 +15,10 @@ cdef extern from "structs.h":
         s21
 
     cdef cppclass Group:
-        Group() except +
-        string group_name
-        char model[]
-        unsigned int id_start[]
-        unsigned int id_end[]
-        unsigned int group_size[]
+        Group()
+
+
+cdef extern from "Interface.h" namespace "std":
 
     cdef void connect_fixed_indegree(Group & pre_neurons, Group & post_neurons, double delay, double weight, int indegree,
                                 short high_distr)
