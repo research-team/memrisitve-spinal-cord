@@ -1,26 +1,32 @@
 # distutils: language = c++
+from libcpp.string cimport string
 
-from Interface cimport *
+cdef extern from "Interdace.h":
+    cdef cppclass Group:
+        Group()
+        string group_name
+        char model
+        unsigned int id_start
+        unsigned int id_end
+        unsigned int group_size
 
-cdef class PyGroup():
-    cdef Group c_group
-    def __cinit__(self):
-        self.c_group = Group()
-
-def call_connect_fixed_indegree():
-    cdef Group pre_group, post_group
-    cdef double delay, weight
-    connect_fixed_indegree(pre_group, post_group, delay, weight, 50, 0)
-
-def call_simulate():
-    cdef void (*func)()
-    simulate(func)
-
-def call_custom():
-    cdef void (*func)()
-    custom(func, 1, 1, 0, 1, 1, 1, quadru, normal, s13)
+    cdef enum string_code: air, toe, plt, quadru, normal, qpz, str, s6, s13, s21
 
 
-def call_form_group():
+cdef extern from "Interface.h" namespace "std":
+    void connect_fixed_indegree(Group & pre_neurons, Group & post_neurons, double delay, double weight, int indegree,
+                                short high_distr)
+
+    void simulate(void (*network)())
+
+    void custom(void (*t_network)(), int steps, int test_ind, int TEST, int E2F_coef, int V0v2F_coef,
+                int QUADRU_Ia,
+                string_code mode, string_code pharma, string_code speed)
+
+    Group form_group(const string & group_name, int nrns_in_group, const char model, const int segs )
+
+
+
+cpdef Group kek():
     cdef const string name
     form_group(name, 50, 'i', 1)
