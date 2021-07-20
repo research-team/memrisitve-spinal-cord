@@ -87,14 +87,12 @@ def customize_compiler_for_nvcc(self):
 # find CUDA
 CUDA = locate_cuda()
 
-
 class CustomBuildExt(build_ext):
     def build_extensions(self):
         customize_compiler_for_nvcc(self.compiler)
         build_ext.build_extensions(self)
 
-
-ext = Extension('Interface',
+ext = Extension('I',
         sources=['Interface.pyx', 'core.cu'],
         library_dirs=[CUDA['lib64']],
         libraries=['cudart'],
@@ -106,7 +104,6 @@ ext = Extension('Interface',
                                 nvcc=['-arch=sm_60', '--ptxas-options=-v', '-c', '--compiler-options', "'-fPIC'", '-O3']),
         include_dirs=[CUDA['include'], 'src'],
         extra_link_args=["-std=c++11"])
-
 
 setup(name='gpu_gras',
       author='ncnlab',

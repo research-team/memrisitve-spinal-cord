@@ -131,6 +131,15 @@ struct Synapses {
 	unsigned int size;      // array size
 };
 
+
+
+namespace std {
+    Group form_group(const string &group_name,
+                     int nrns_in_group = 50,
+                     const char model = INTER,
+                     const int segs = 1);
+};
+
 #endif //NEURON_GRAS_STRUCTS_H
 
 ////

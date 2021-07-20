@@ -2,7 +2,8 @@
 # distutils: sources = core.cu
 
 from libcpp.string cimport string
-cimport Interface
+from Interface cimport *
 
-cpdef ff_form_group(name):
+cpdef ff_form_group():
+    cdef string name
     form_group(name, 50, "i", 1)
