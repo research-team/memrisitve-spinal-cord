@@ -1,14 +1,18 @@
 # distutils: language = c++
 from libcpp.string cimport string
 
+# cdef extern from "structs.h":
+
+
+
 cdef extern from "structs.h":
-    cppclass Group:
+
+    cdef cppclass Group:
         Group()
-        string group_name;
+        string group_name
         char model
         unsigned int id_start
         unsigned int id_end
         unsigned int group_size
-
-cdef extern from "structs.h":
-    Group form_group(string &, int, char,int)
+    cdef Group form_group(string &, int, char, int)
+# cdef extern from "core.cu" namespace "std":

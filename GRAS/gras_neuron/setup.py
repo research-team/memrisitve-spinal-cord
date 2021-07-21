@@ -92,7 +92,7 @@ class CustomBuildExt(build_ext):
         customize_compiler_for_nvcc(self.compiler)
         build_ext.build_extensions(self)
 
-ext = Extension('I',
+ext = Extension('Interface',
         sources=['Interface.pyx', 'core.cu'],
         library_dirs=[CUDA['lib64']],
         libraries=['cudart'],

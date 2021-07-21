@@ -15,15 +15,20 @@ const char MOTO = 'm';
 const char MUSCLE = 'u';
 const char AFFERENTS = 'a';
 
-class Group {
-public:
-	Group() = default;
-	std::string group_name;
-	char model{};
-	unsigned int id_start{};
-	unsigned int id_end{};
-	unsigned int group_size{};
-};
+ class Group {
+    public:
+        Group() = default;
+        std::string group_name;
+        char model{};
+        unsigned int id_start{};
+        unsigned int id_end{};
+        unsigned int group_size{};
+ };
+
+
+Group form_group(const std::string &group_name, int nrns_in_group, const char model, const int segs);
+
+
 
 // struct for human-readable initialization of connectomes
 struct GroupMetadata {
@@ -133,12 +138,7 @@ struct Synapses {
 
 
 
-namespace std {
-    Group form_group(const string &group_name,
-                     int nrns_in_group = 50,
-                     const char model = INTER,
-                     const int segs = 1);
-};
+
 
 #endif //NEURON_GRAS_STRUCTS_H
 

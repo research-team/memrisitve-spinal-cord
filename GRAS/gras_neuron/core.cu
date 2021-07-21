@@ -130,7 +130,7 @@ double *bimodal_distr_for_moto_neurons(const unsigned int nrnnumber) {
 
 // form structs of neurons global ID and groups name
 Group form_group(const string &group_name,
-                 int nrns_in_group = neurons_in_group,
+                 int nrns_in_group = 50,
                  const char model = INTER,
                  const int segs = 1) {
 	/**

@@ -1,2 +1,4 @@
-import I
-x = ff_form_group('12', 20, 'i', 1)
+import Interface
+from Interface import py_form_group
+x = py_form_group('fuckin_nrns', 50)
+a = py_form_group('fuckin_nrns2', 50)
