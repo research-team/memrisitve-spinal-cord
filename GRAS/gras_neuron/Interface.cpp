@@ -925,6 +925,18 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 #define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
 #endif
 
+/* UnicodeAsUCS4.proto */
+static CYTHON_INLINE Py_UCS4 __Pyx_PyUnicode_AsPy_UCS4(PyObject*);
+
+/* object_ord.proto */
+#if PY_MAJOR_VERSION >= 3
+#define __Pyx_PyObject_Ord(c)\
+    (likely(PyUnicode_Check(c)) ? (long)__Pyx_PyUnicode_AsPy_UCS4(c) : __Pyx__PyObject_Ord(c))
+#else
+#define __Pyx_PyObject_Ord(c) __Pyx__PyObject_Ord(c)
+#endif
+static long __Pyx__PyObject_Ord(PyObject* c);
+
 /* PyDictVersioning.proto */
 #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
 #define __PYX_DICT_VERSION_INIT  ((PY_UINT64_T) -1)
@@ -1066,9 +1078,11 @@ int __pyx_module_is_main_Interface = 0;
 
 /* Implementation of 'Interface' */
 static const char __pyx_k_main[] = "__main__";
+static const char __pyx_k_mode[] = "mode";
 static const char __pyx_k_name[] = "__name__";
 static const char __pyx_k_nrns[] = "nrns";
 static const char __pyx_k_test[] = "__test__";
+static const char __pyx_k_model[] = "model";
 static const char __pyx_k_utf_8[] = "utf-8";
 static const char __pyx_k_name_2[] = "name";
 static const char __pyx_k_Interface[] = "Interface";
@@ -1081,6 +1095,8 @@ static PyObject *__pyx_n_s_Interface;
 static PyObject *__pyx_kp_s_Interface_pyx;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_main;
+static PyObject *__pyx_n_s_mode;
+static PyObject *__pyx_n_s_model;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_name_2;
 static PyObject *__pyx_n_s_name_group;
@@ -1089,15 +1105,15 @@ static PyObject *__pyx_n_s_nrns_in_grp;
 static PyObject *__pyx_n_s_py_form_group;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_kp_s_utf_8;
-static PyObject *__pyx_pf_9Interface_py_form_group(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_name_group, PyObject *__pyx_v_nrns_in_grp); /* proto */
+static PyObject *__pyx_pf_9Interface_py_form_group(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_name_group, PyObject *__pyx_v_nrns_in_grp, PyObject *__pyx_v_mode); /* proto */
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_codeobj__2;
 /* Late includes */
 
-/* "Interface.pyx":6
- * from Interface cimport *
+/* "Interface.pyx":7
  * 
- * def py_form_group(name_group, nrns_in_grp):             # <<<<<<<<<<<<<<
+ * 
+ * def py_form_group(name_group, nrns_in_grp, mode):             # <<<<<<<<<<<<<<
  *     cdef string name = bytes(name_group, 'utf-8')
  *     cdef int nrns = nrns_in_grp
  */
@@ -1108,6 +1124,7 @@ static PyMethodDef __pyx_mdef_9Interface_1py_form_group = {"py_form_group", (PyC
 static PyObject *__pyx_pw_9Interface_1py_form_group(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_name_group = 0;
   PyObject *__pyx_v_nrns_in_grp = 0;
+  PyObject *__pyx_v_mode = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -1115,12 +1132,14 @@ static PyObject *__pyx_pw_9Interface_1py_form_group(PyObject *__pyx_self, PyObje
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("py_form_group (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_name_group,&__pyx_n_s_nrns_in_grp,0};
-    PyObject* values[2] = {0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_name_group,&__pyx_n_s_nrns_in_grp,&__pyx_n_s_mode,0};
+    PyObject* values[3] = {0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+        CYTHON_FALLTHROUGH;
         case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
         CYTHON_FALLTHROUGH;
         case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -1137,58 +1156,68 @@ static PyObject *__pyx_pw_9Interface_1py_form_group(PyObject *__pyx_self, PyObje
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nrns_in_grp)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("py_form_group", 1, 2, 2, 1); __PYX_ERR(0, 6, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("py_form_group", 1, 3, 3, 1); __PYX_ERR(0, 7, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  2:
+        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_mode)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("py_form_group", 1, 3, 3, 2); __PYX_ERR(0, 7, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "py_form_group") < 0)) __PYX_ERR(0, 6, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "py_form_group") < 0)) __PYX_ERR(0, 7, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
     }
     __pyx_v_name_group = values[0];
     __pyx_v_nrns_in_grp = values[1];
+    __pyx_v_mode = values[2];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("py_form_group", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 6, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("py_form_group", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 7, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("Interface.py_form_group", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9Interface_py_form_group(__pyx_self, __pyx_v_name_group, __pyx_v_nrns_in_grp);
+  __pyx_r = __pyx_pf_9Interface_py_form_group(__pyx_self, __pyx_v_name_group, __pyx_v_nrns_in_grp, __pyx_v_mode);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9Interface_py_form_group(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_name_group, PyObject *__pyx_v_nrns_in_grp) {
+static PyObject *__pyx_pf_9Interface_py_form_group(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_name_group, PyObject *__pyx_v_nrns_in_grp, PyObject *__pyx_v_mode) {
   std::string __pyx_v_name;
   int __pyx_v_nrns;
+  char __pyx_v_model;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   std::string __pyx_t_3;
   int __pyx_t_4;
+  long __pyx_t_5;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("py_form_group", 0);
 
-  /* "Interface.pyx":7
+  /* "Interface.pyx":8
  * 
- * def py_form_group(name_group, nrns_in_grp):
+ * def py_form_group(name_group, nrns_in_grp, mode):
  *     cdef string name = bytes(name_group, 'utf-8')             # <<<<<<<<<<<<<<
  *     cdef int nrns = nrns_in_grp
- * 
+ *     cdef char model = ord(mode)
  */
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v_name_group);
   __Pyx_GIVEREF(__pyx_v_name_group);
@@ -1196,34 +1225,43 @@ static PyObject *__pyx_pf_9Interface_py_form_group(CYTHON_UNUSED PyObject *__pyx
   __Pyx_INCREF(__pyx_kp_s_utf_8);
   __Pyx_GIVEREF(__pyx_kp_s_utf_8);
   PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_kp_s_utf_8);
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyBytes_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyBytes_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_name = __pyx_t_3;
 
-  /* "Interface.pyx":8
- * def py_form_group(name_group, nrns_in_grp):
+  /* "Interface.pyx":9
+ * def py_form_group(name_group, nrns_in_grp, mode):
  *     cdef string name = bytes(name_group, 'utf-8')
  *     cdef int nrns = nrns_in_grp             # <<<<<<<<<<<<<<
- * 
- *     form_group(name, nrns, 'i', 1)
+ *     cdef char model = ord(mode)
+ *     form_group(name, nrns, model, 1)
  */
-  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_nrns_in_grp); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_nrns_in_grp); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 9, __pyx_L1_error)
   __pyx_v_nrns = __pyx_t_4;
 
   /* "Interface.pyx":10
+ *     cdef string name = bytes(name_group, 'utf-8')
  *     cdef int nrns = nrns_in_grp
- * 
- *     form_group(name, nrns, 'i', 1)             # <<<<<<<<<<<<<<
+ *     cdef char model = ord(mode)             # <<<<<<<<<<<<<<
+ *     form_group(name, nrns, model, 1)
  */
-  (void)(form_group(__pyx_v_name, __pyx_v_nrns, 'i', 1));
+  __pyx_t_5 = __Pyx_PyObject_Ord(__pyx_v_mode); if (unlikely(__pyx_t_5 == ((long)(long)(Py_UCS4)-1))) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_v_model = __pyx_t_5;
 
-  /* "Interface.pyx":6
- * from Interface cimport *
+  /* "Interface.pyx":11
+ *     cdef int nrns = nrns_in_grp
+ *     cdef char model = ord(mode)
+ *     form_group(name, nrns, model, 1)             # <<<<<<<<<<<<<<
+ */
+  (void)(form_group(__pyx_v_name, __pyx_v_nrns, __pyx_v_model, 1));
+
+  /* "Interface.pyx":7
  * 
- * def py_form_group(name_group, nrns_in_grp):             # <<<<<<<<<<<<<<
+ * 
+ * def py_form_group(name_group, nrns_in_grp, mode):             # <<<<<<<<<<<<<<
  *     cdef string name = bytes(name_group, 'utf-8')
  *     cdef int nrns = nrns_in_grp
  */
@@ -1357,6 +1395,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Interface_pyx, __pyx_k_Interface_pyx, sizeof(__pyx_k_Interface_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
+  {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
+  {&__pyx_n_s_model, __pyx_k_model, sizeof(__pyx_k_model), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_name_2, __pyx_k_name_2, sizeof(__pyx_k_name_2), 0, 0, 1, 1},
   {&__pyx_n_s_name_group, __pyx_k_name_group, sizeof(__pyx_k_name_group), 0, 0, 1, 1},
@@ -1375,17 +1415,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "Interface.pyx":6
- * from Interface cimport *
+  /* "Interface.pyx":7
  * 
- * def py_form_group(name_group, nrns_in_grp):             # <<<<<<<<<<<<<<
+ * 
+ * def py_form_group(name_group, nrns_in_grp, mode):             # <<<<<<<<<<<<<<
  *     cdef string name = bytes(name_group, 'utf-8')
  *     cdef int nrns = nrns_in_grp
  */
-  __pyx_tuple_ = PyTuple_Pack(4, __pyx_n_s_name_group, __pyx_n_s_nrns_in_grp, __pyx_n_s_name_2, __pyx_n_s_nrns); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(6, __pyx_n_s_name_group, __pyx_n_s_nrns_in_grp, __pyx_n_s_mode, __pyx_n_s_name_2, __pyx_n_s_nrns, __pyx_n_s_model); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Interface_pyx, __pyx_n_s_py_form_group, 6, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(3, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Interface_pyx, __pyx_n_s_py_form_group, 7, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -1666,16 +1706,16 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "Interface.pyx":6
- * from Interface cimport *
+  /* "Interface.pyx":7
  * 
- * def py_form_group(name_group, nrns_in_grp):             # <<<<<<<<<<<<<<
+ * 
+ * def py_form_group(name_group, nrns_in_grp, mode):             # <<<<<<<<<<<<<<
  *     cdef string name = bytes(name_group, 'utf-8')
  *     cdef int nrns = nrns_in_grp
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_9Interface_1py_form_group, NULL, __pyx_n_s_Interface); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_9Interface_1py_form_group, NULL, __pyx_n_s_Interface); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_py_form_group, __pyx_t_1) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_py_form_group, __pyx_t_1) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "Interface.pyx":1
@@ -1899,6 +1939,66 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
     return result;
 }
 #endif
+
+/* UnicodeAsUCS4 */
+static CYTHON_INLINE Py_UCS4 __Pyx_PyUnicode_AsPy_UCS4(PyObject* x) {
+   Py_ssize_t length;
+   #if CYTHON_PEP393_ENABLED
+   length = PyUnicode_GET_LENGTH(x);
+   if (likely(length == 1)) {
+       return PyUnicode_READ_CHAR(x, 0);
+   }
+   #else
+   length = PyUnicode_GET_SIZE(x);
+   if (likely(length == 1)) {
+       return PyUnicode_AS_UNICODE(x)[0];
+   }
+   #if Py_UNICODE_SIZE == 2
+   else if (PyUnicode_GET_SIZE(x) == 2) {
+       Py_UCS4 high_val = PyUnicode_AS_UNICODE(x)[0];
+       if (high_val >= 0xD800 && high_val <= 0xDBFF) {
+           Py_UCS4 low_val = PyUnicode_AS_UNICODE(x)[1];
+           if (low_val >= 0xDC00 && low_val <= 0xDFFF) {
+               return 0x10000 + (((high_val & ((1<<10)-1)) << 10) | (low_val & ((1<<10)-1)));
+           }
+       }
+   }
+   #endif
+   #endif
+   PyErr_Format(PyExc_ValueError,
+                "only single character unicode strings can be converted to Py_UCS4, "
+                "got length %" CYTHON_FORMAT_SSIZE_T "d", length);
+   return (Py_UCS4)-1;
+}
+
+/* object_ord */
+static long __Pyx__PyObject_Ord(PyObject* c) {
+    Py_ssize_t size;
+    if (PyBytes_Check(c)) {
+        size = PyBytes_GET_SIZE(c);
+        if (likely(size == 1)) {
+            return (unsigned char) PyBytes_AS_STRING(c)[0];
+        }
+#if PY_MAJOR_VERSION < 3
+    } else if (PyUnicode_Check(c)) {
+        return (long)__Pyx_PyUnicode_AsPy_UCS4(c);
+#endif
+#if (!CYTHON_COMPILING_IN_PYPY) || (defined(PyByteArray_AS_STRING) && defined(PyByteArray_GET_SIZE))
+    } else if (PyByteArray_Check(c)) {
+        size = PyByteArray_GET_SIZE(c);
+        if (likely(size == 1)) {
+            return (unsigned char) PyByteArray_AS_STRING(c)[0];
+        }
+#endif
+    } else {
+        PyErr_Format(PyExc_TypeError,
+            "ord() expected string of length 1, but %.200s found", c->ob_type->tp_name);
+        return (long)(Py_UCS4)-1;
+    }
+    PyErr_Format(PyExc_TypeError,
+        "ord() expected a character, but string of length %zd found", size);
+    return (long)(Py_UCS4)-1;
+}
 
 /* PyDictVersioning */
 #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
