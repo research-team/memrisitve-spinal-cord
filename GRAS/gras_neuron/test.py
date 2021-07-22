@@ -1,4 +1,5 @@
-from Interface import py_form_group
+from Interface import Py_Group, py_connect
 
-x = py_form_group('fuckin_nrns', 1, 'g')
-a = py_form_group('fuckin_nrns2', 50, 'i')
+x = Py_Group('a')
+a = Py_Group('b')
+py_connect(x, a, 1, 0.025)

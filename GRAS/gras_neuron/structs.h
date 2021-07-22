@@ -25,7 +25,7 @@ const char AFFERENTS = 'a';
         unsigned int group_size{};
  };
 
-
+void connect_fixed_indegree(Group &pre_neurons, Group &post_neurons, double delay, double weight, int indegree, short high_distr);
 Group form_group(const std::string &group_name, int nrns_in_group, const char model, const int segs);
 
 
